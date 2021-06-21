@@ -11,6 +11,10 @@ fun getKRLanguage() : String{
     return "ko-KR"
 }
 
+fun getStartImageUrl() : String{
+    return "https://image.tmdb.org/t/p/original/"
+}
+
 fun retrofitSetting() : Retrofit{
     return Retrofit.Builder().baseUrl("https://api.themoviedb.org/3/")
             .addConverterFactory(GsonConverterFactory.create())

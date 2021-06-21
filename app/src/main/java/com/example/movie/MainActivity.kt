@@ -3,12 +3,14 @@
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.databinding.DataBindingUtil
 import com.example.movie.adapter.TrendingAdapter
 import com.example.movie.databinding.ActivityMainBinding
 import com.example.movie.network.Movie
 import com.example.movie.network.MovieService
 import com.example.movie.network.TrendingList
+import org.jetbrains.anko.startActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -28,12 +30,18 @@ class MainActivity : AppCompatActivity() {
                 val trendingList = response.body()
                 val imagePathList = mutableListOf<String>()
                 trendingList?.results?.forEach{
-                    Log.e("test", "${it.backdrop_path}")
-                    imagePathList.add("https://image.tmdb.org/t/p/original/${it.backdrop_path}")
+                    imagePathList.add("${getStartImageUrl()}${it.backdrop_path}")
                 }
 
                 binding.vpTrending.apply {
-                    adapter = TrendingAdapter(this@MainActivity, imagePathList)
+                    adapter = TrendingAdapter(this@MainActivity, imagePathList).apply {
+                        setListener { view ->
+                            val position = view.tag as Int
+                            val movieId = trendingList?.results?.get(position)?.id
+                            startActivity<MovieDetailActivity>(Constants.INTENT_KEY_IMAGE_PATH to imagePathList[position],
+                                                            Constants.INTENT_KEY_MOVIE_ID to movieId)
+                        }
+                    }
                     offscreenPageLimit = 3
                     setPageTransformer(SliderTransformer(3))
                 }
